@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<!--
+	NOTES:
+	1. All tokens are represented by '$' sign in the template.
+	2. You can write your code only wherever mentioned.
+	3. All occurrences of existing tokens will be replaced by their appropriate values.
+	4. Blank lines will be removed automatically.
+	5. Remove unnecessary comments before creating your template.
+-->
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="authoring-tool" content="Adobe_Animate_CC">
+<title>03_01_내친구이름</title>
+<!-- write your code here -->
+<style>
+  #animation_container {
+	position:absolute;
+	margin:auto;
+	left:0;right:0;
+	top:0;bottom:0;
+  }
+</style>
+<script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+<script>
+(function (cjs, an) {
+var p; // shortcut to reference prototypes
+var lib={};var ss={};var img={};
+lib.ssMetadata = [
+		{name:"03_01_내친구이름_atlas_1", frames: [[0,802,1628,417],[0,1221,1628,417],[0,0,1280,800]]},
+		{name:"03_01_내친구이름_atlas_2", frames: [[0,0,1628,417],[0,419,1628,417],[0,838,1628,417],[0,1257,1628,417]]},
+		{name:"03_01_내친구이름_atlas_3", frames: [[0,0,1628,417],[0,419,1628,417],[0,838,1628,417],[0,1257,1628,417]]},
+		{name:"03_01_내친구이름_atlas_4", frames: [[0,0,1628,417],[0,419,1628,417],[0,838,1628,417],[0,1257,1628,417]]},
+		{name:"03_01_내친구이름_atlas_5", frames: [[0,0,1628,417],[0,419,1628,417],[0,838,1628,417],[0,1257,1628,417]]},
+		{name:"03_01_내친구이름_atlas_6", frames: [[0,0,1628,417],[0,419,1628,417],[0,838,1628,417],[0,1257,1628,417]]},
+		{name:"03_01_내친구이름_atlas_7", frames: [[1964,170,38,30],[2011,0,4,91],[1841,170,39,31],[1882,170,39,31],[2023,0,4,88],[1923,170,39,31],[2017,0,4,89],[1630,430,266,102],[1630,212,280,107],[1630,534,159,160],[1630,0,209,210],[1841,0,168,168],[0,0,1628,417],[0,419,1628,417],[0,838,1628,417],[0,1257,1628,417],[1630,321,280,107],[0,1676,1973,86],[0,1764,541,121],[1043,1764,482,98],[543,1764,498,122]]}
+];
+(lib.AnMovieClip = function(){
+	this.actionFrames = [];
+	this.ignorePause = false;
+	this.currentSoundStreamInMovieclip;
+	this.soundStreamDuration = new Map();
+	this.streamSoundSymbolsList = [];
+	this.gotoAndPlayForStreamSoundSync = function(positionOrLabel){
+		cjs.MovieClip.prototype.gotoAndPlay.call(this,positionOrLabel);
+	}
+	this.gotoAndPlay = function(positionOrLabel){
+		this.clearAllSoundStreams();
+		var pos = this.timeline.resolve(positionOrLabel);
+		if (pos != null) { this.startStreamSoundsForTargetedFrame(pos); }
+		cjs.MovieClip.prototype.gotoAndPlay.call(this,positionOrLabel);
+	}
+	this.play = function(){
+		this.clearAllSoundStreams();
+		this.startStreamSoundsForTargetedFrame(this.currentFrame);
+		cjs.MovieClip.prototype.play.call(this);
+	}
+	this.gotoAndStop = function(positionOrLabel){
+		cjs.MovieClip.prototype.gotoAndStop.call(this,positionOrLabel);
+		this.clearAllSoundStreams();
+	}
+	this.stop = function(){
+		cjs.MovieClip.prototype.stop.call(this);
+		this.clearAllSoundStreams();
+	}
+	this.startStreamSoundsForTargetedFrame = function(targetFrame){
+		for(var index=0; index<this.streamSoundSymbolsList.length; index++){
+			if(index <= targetFrame && this.streamSoundSymbolsList[index] != undefined){
+				for(var i=0; i<this.streamSoundSymbolsList[index].length; i++){
+					var sound = this.streamSoundSymbolsList[index][i];
+					if(sound.endFrame > targetFrame){
+						var targetPosition = Math.abs((((targetFrame - sound.startFrame)/lib.properties.fps) * 1000));
+						var instance = playSound(sound.id);
+						var remainingLoop = 0;
+						if(sound.offset){
+							targetPosition = targetPosition + sound.offset;
+						}
+						else if(sound.loop > 1){
+							var loop = targetPosition /instance.duration;
+							remainingLoop = Math.floor(sound.loop - loop);
+							if(targetPosition == 0){ remainingLoop -= 1; }
+							targetPosition = targetPosition % instance.duration;
+						}
+						instance.loop = remainingLoop;
+						instance.position = Math.round(targetPosition);
+						this.InsertIntoSoundStreamData(instance, sound.startFrame, sound.endFrame, sound.loop , sound.offset);
+					}
+				}
+			}
+		}
+	}
+	this.InsertIntoSoundStreamData = function(soundInstance, startIndex, endIndex, loopValue, offsetValue){ 
+ 		this.soundStreamDuration.set({instance:soundInstance}, {start: startIndex, end:endIndex, loop:loopValue, offset:offsetValue});
+	}
+	this.clearAllSoundStreams = function(){
+		this.soundStreamDuration.forEach(function(value,key){
+			key.instance.stop();
+		});
+ 		this.soundStreamDuration.clear();
+		this.currentSoundStreamInMovieclip = undefined;
+	}
+	this.stopSoundStreams = function(currentFrame){
+		if(this.soundStreamDuration.size > 0){
+			var _this = this;
+			this.soundStreamDuration.forEach(function(value,key,arr){
+				if((value.end) == currentFrame){
+					key.instance.stop();
+					if(_this.currentSoundStreamInMovieclip == key) { _this.currentSoundStreamInMovieclip = undefined; }
+					arr.delete(key);
+				}
+			});
+		}
+	}
+	this.computeCurrentSoundStreamInstance = function(currentFrame){
+		if(this.currentSoundStreamInMovieclip == undefined){
+			var _this = this;
+			if(this.soundStreamDuration.size > 0){
+				var maxDuration = 0;
+				this.soundStreamDuration.forEach(function(value,key){
+					if(value.end > maxDuration){
+						maxDuration = value.end;
+						_this.currentSoundStreamInMovieclip = key;
+					}
+				});
+			}
+		}
+	}
+	this.getDesiredFrame = function(currentFrame, calculatedDesiredFrame){
+		for(var frameIndex in this.actionFrames){
+			if((frameIndex > currentFrame) && (frameIndex < calculatedDesiredFrame)){
+				return frameIndex;
+			}
+		}
+		return calculatedDesiredFrame;
+	}
+	this.syncStreamSounds = function(){
+		this.stopSoundStreams(this.currentFrame);
+		this.computeCurrentSoundStreamInstance(this.currentFrame);
+		if(this.currentSoundStreamInMovieclip != undefined){
+			var soundInstance = this.currentSoundStreamInMovieclip.instance;
+			if(soundInstance.position != 0){
+				var soundValue = this.soundStreamDuration.get(this.currentSoundStreamInMovieclip);
+				var soundPosition = (soundValue.offset?(soundInstance.position - soundValue.offset): soundInstance.position);
+				var calculatedDesiredFrame = (soundValue.start)+((soundPosition/1000) * lib.properties.fps);
+				if(soundValue.loop > 1){
+					calculatedDesiredFrame +=(((((soundValue.loop - soundInstance.loop -1)*soundInstance.duration)) / 1000) * lib.properties.fps);
+				}
+				calculatedDesiredFrame = Math.floor(calculatedDesiredFrame);
+				var deltaFrame = calculatedDesiredFrame - this.currentFrame;
+				if((deltaFrame >= 0) && this.ignorePause){
+					cjs.MovieClip.prototype.play.call(this);
+					this.ignorePause = false;
+				}
+				else if(deltaFrame >= 2){
+					this.gotoAndPlayForStreamSoundSync(this.getDesiredFrame(this.currentFrame,calculatedDesiredFrame));
+				}
+				else if(deltaFrame <= -2){
+					cjs.MovieClip.prototype.stop.call(this);
+					this.ignorePause = true;
+				}
+			}
+		}
+	}
+}).prototype = p = new cjs.MovieClip();
+// symbols:
+(lib.CachedBmp_388 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(0);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_387 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(1);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_386 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(2);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_384 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(3);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_385 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(4);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_382 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(5);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_381 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(6);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_380 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(7);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_379 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(8);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_378 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(9);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_377 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(10);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_376 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(11);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_375 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_1"]);
+	this.gotoAndStop(0);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_374 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_1"]);
+	this.gotoAndStop(1);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_373 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_2"]);
+	this.gotoAndStop(0);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_372 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_2"]);
+	this.gotoAndStop(1);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_371 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_2"]);
+	this.gotoAndStop(2);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_370 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_2"]);
+	this.gotoAndStop(3);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_369 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_3"]);
+	this.gotoAndStop(0);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_368 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_3"]);
+	this.gotoAndStop(1);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_367 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_3"]);
+	this.gotoAndStop(2);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_366 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_3"]);
+	this.gotoAndStop(3);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_365 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_4"]);
+	this.gotoAndStop(0);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_364 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_4"]);
+	this.gotoAndStop(1);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_363 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_4"]);
+	this.gotoAndStop(2);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_362 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_4"]);
+	this.gotoAndStop(3);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_361 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_5"]);
+	this.gotoAndStop(0);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_360 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_5"]);
+	this.gotoAndStop(1);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_359 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_5"]);
+	this.gotoAndStop(2);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_358 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_5"]);
+	this.gotoAndStop(3);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_357 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_6"]);
+	this.gotoAndStop(0);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_356 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_6"]);
+	this.gotoAndStop(1);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_355 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_6"]);
+	this.gotoAndStop(2);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_354 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_6"]);
+	this.gotoAndStop(3);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_353 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(12);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_352 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(13);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_351 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(14);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_350 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(15);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_349 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(16);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_348 = function() {
+	this.initialize(img.CachedBmp_348);
+}).prototype = p = new cjs.Bitmap();
+p.nominalBounds = new cjs.Rectangle(0,0,2083,562);
+(lib.CachedBmp_347 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(17);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_346 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(18);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_345 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(19);
+}).prototype = p = new cjs.Sprite();
+(lib.CachedBmp_344 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_7"]);
+	this.gotoAndStop(20);
+}).prototype = p = new cjs.Sprite();
+(lib.bg_01 = function() {
+	this.initialize(ss["03_01_내친구이름_atlas_1"]);
+	this.gotoAndStop(2);
+}).prototype = p = new cjs.Sprite();
+(lib.rest_4 = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// Layer_1
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f("#000000").s().p("AgcCoIgXgWQgLgOgBgOQgCgJADgJQACgKAGgGQAEgFAJgGQAGgDANgCIAKAAIAdAEQgkgkgTgXQgTgXADgIIALgNIAPgWIANgcQAGgPAAgNQAAgIgGgPIgeg2IAHgFIBdB1QgOAPgJARIgPAdQgHAPAAAOQAAAKADAIQACAKAFAHIASAcIAXAaIAEAFIgBAIIgYgIIgTgCQgQAAgLAKQgLAKAAASIADAMIAJAOIANAOIgGAGQgSgLgMgNg");
+	this.shape.setTransform(0.0136,0.025);
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("#F96868").s().p("AgcCoIgXgWQgLgOgBgOQgCgJADgJQACgKAGgGQAEgFAJgGQAGgDANgCIAKAAIAdAEQgkgkgTgXQgTgXADgIIALgNIAPgWIANgcQAGgPAAgNQAAgIgGgPIgeg2IAHgFIBdB1QgOAPgJARIgPAdQgHAPAAAOQAAAKADAIQACAKAFAHIASAcIAXAaIAEAFIgBAIIgYgIIgTgCQgQAAgLAKQgLAKAAASIADAMIAJAOIANAOIgGAGQgSgLgMgNg");
+	this.shape_1.setTransform(0.0136,0.025);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape}]}).to({state:[{t:this.shape_1}]},1).wait(1));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-6.4,-19.2,12.9,38.5);
+(lib._8_note_under = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// Layer_2
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f().s("#000000").ss(1,2,1).p("Ah/AAID/AA");
+	this.shape.setTransform(-8.05,19.25);
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("#F96868").s().p("AiEAFIAAgJIEJAAIAAAJg");
+	this.shape_1.setTransform(-8.05,19.25);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape}]}).to({state:[{t:this.shape_1}]},1).wait(1));
+	// Layer_1
+	this.shape_2 = new cjs.Shape();
+	this.shape_2.graphics.f("#000000").s().p("Ag6BLQghgLgHgdQgGgfAYgdQAYggApgOQAngPAtAPQAMACAJASIAJARQAFAegZAeQgYAfgoAOQgWAIgVAAQgQAAgOgEg");
+	this.shape_2.setTransform(-7.8333,19.1951,0.9621,0.9621);
+	this.shape_3 = new cjs.Shape();
+	this.shape_3.graphics.f("#000000").s().p("AhVDJIAAmsIAVAAQAQBVBGBEQBAA9AAA+QAAAigJAiQgGAVgHAPIAFgdQADgfAAgPQAAhCgyglQgOgLgggVQgagRgQgSIAAFAg");
+	this.shape_3.setTransform(8.475,-5.6);
+	this.shape_4 = new cjs.Shape();
+	this.shape_4.graphics.f("#F96868").s().p("AiEEQQgggLgGgcQgHgdAXgeQAYgeAngNQAngPArAPQAGAAADAFIAAmbIAVAAQAQBVBHBEQBBA9AAA9QAAAjgJAiQgGAVgHAPIAEgeQAEgfAAgOQAAhBgygmQgPgLgggVQgagRgRgSIAAE2QADAagWAcQgWAfgnANQgXAIgUAAQgPAAgNgEg");
+	this.shape_4.setTransform(-0.1716,-0.7545);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_3},{t:this.shape_2}]}).to({state:[{t:this.shape_4}]},1).wait(1));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-21.8,-28.3,38.900000000000006,55.2);
+(lib._8_note = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// Layer_1
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f("#000000").s().p("Ag6BLQghgLgHgdQgGgfAYgdQAYggApgOQAngPAtAPQAMACAJASIAJARQAFAegZAeQgYAfgoAOQgWAIgVAAQgQAAgOgEg");
+	this.shape.setTransform(-7.8333,19.1951,0.9621,0.9621);
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("#000000").s().p("AhVDHIAAmoIAOAAQAXBRBGBFQBAA9AAA9QAAAigJAjQgGAVgHAPIAFgeQADgfAAgOQAAhCgygmQgOgLgggVQgagRgQgRIAAE/g");
+	this.shape_1.setTransform(8.475,-6.25);
+	this.shape_2 = new cjs.Shape();
+	this.shape_2.graphics.f("#F96868").s().p("AiEESQgggKgGgcQgHgeAXgdQAYgeAngOQAngOArAOQAGABADAEIAAmfIAOAAQAXBRBHBEQBBA+AAA+QAAAhgJAiQgGAWgHAOIAEgdQAEgfAAgPQAAhBgygmQgPgLgggVQgagRgRgSIAAE+QADAbgWAcQgWAegnANQgXAIgUAAQgPAAgNgEg");
+	this.shape_2.setTransform(-0.1716,-1.0045);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_1},{t:this.shape}]}).to({state:[{t:this.shape_2}]},1).wait(1));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-17.4,-28.8,34.5,55.7);
+(lib._4_note = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// Layer_1
+	this.instance = new lib.CachedBmp_388();
+	this.instance.setTransform(-9.55,11.1,0.5,0.5);
+	this.instance_1 = new lib.CachedBmp_387();
+	this.instance_1.setTransform(7.55,-28.55,0.5,0.5);
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f("#F96868").s().p("Ag3ENQgfgKgHgcQgGgdAXgdQAXgeAngNQAmgOAqAOQAFAAAFAFIAAmYIATAAIAAHGIAAAAQgCAUgSAWQgWAegnANQgVAIgUAAQgPAAgNgFg");
+	this.shape.setTransform(-0.0621,-1.175);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.instance_1},{t:this.instance}]}).to({state:[{t:this.shape}]},1).wait(1));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-9.5,-28.5,19.1,54.7);
+(lib._2_note_dot2 = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// Layer_2
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f("#000000").s().p("AgSASQgGgHgBgLQABgKAGgHQAIgHAKgBQAKABAIAHQAHAHABAKQgBALgHAHQgIAIgKAAQgKAAgIgIg");
+	this.shape.setTransform(17.7,18.85);
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("#F96868").s().p("AgSASQgGgHgBgLQABgKAGgHQAIgHAKgBQAKABAIAHQAHAHABAKQgBALgHAHQgIAIgKAAQgKAAgIgIg");
+	this.shape_1.setTransform(17.7,18.85);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape}]}).to({state:[{t:this.shape_1}]},1).wait(1));
+	// Layer_1
+	this.instance = new lib.CachedBmp_386();
+	this.instance.setTransform(-9.9,11.45,0.5,0.5);
+	this.instance_1 = new lib.CachedBmp_385();
+	this.instance_1.setTransform(7.55,-27.85,0.5,0.5);
+	this.shape_2 = new cjs.Shape();
+	this.shape_2.graphics.f("#F96868").s().p("Ag4ENQgggKgHgdQgGgdAXgeQAYgeAngOQAngOArAOQAGACAFAEIAAmVIATAAIAAG2IgBgBQAEAcgYAdQgWAegoANQgVAIgVAAQgPAAgNgEgAATCbQgbAKgcATQgdASgHAOQgIANAEAKQAEAKAPAAQAPAAAcgNQAbgNAbgTQAagTAFgIQAFgJgCgKQgDgLgMgBIgDgBQgMAAgZAKg");
+	this.shape_2.setTransform(-0.2332,-0.5045);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.instance_1},{t:this.instance}]}).to({state:[{t:this.shape_2}]},1).wait(1));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-9.9,-27.8,30.200000000000003,54.8);
+(lib._2_note_dot = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// Layer_2
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f("#000000").s().p("AgSASQgGgHgBgLQABgKAGgHQAIgHAKAAQAKAAAIAHQAHAHABAKQgBALgHAHQgIAIgKAAQgKAAgIgIg");
+	this.shape.setTransform(17.7,13.25);
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("#F96868").s().p("AgSASQgGgHgBgLQABgKAGgHQAIgHAKAAQAKAAAIAHQAHAHABAKQgBALgHAHQgIAIgKAAQgKAAgIgIg");
+	this.shape_1.setTransform(17.7,13.25);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape}]}).to({state:[{t:this.shape_1}]},1).wait(1));
+	// Layer_1
+	this.instance = new lib.CachedBmp_384();
+	this.instance.setTransform(-9.9,11.45,0.5,0.5);
+	this.instance_1 = new lib.CachedBmp_385();
+	this.instance_1.setTransform(7.55,-27.85,0.5,0.5);
+	this.shape_2 = new cjs.Shape();
+	this.shape_2.graphics.f("#F96868").s().p("Ag4ENQgggKgHgdQgGgdAXgeQAYgeAngOQAngOArAOQAGACAFAEIAAmVIATAAIAAG2IgBgBQAEAcgYAdQgWAegoANQgVAIgVAAQgPAAgNgEgAATCbQgbAKgcATQgdASgHAOQgIANAEAKQAEAKAPAAQAPAAAcgNQAbgNAbgTQAagTAFgIQAFgJgCgKQgDgLgMgBIgDgBQgMAAgZAKg");
+	this.shape_2.setTransform(-0.2332,-0.5045);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.instance_1},{t:this.instance}]}).to({state:[{t:this.shape_2}]},1).wait(1));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-9.9,-27.8,30.200000000000003,54.8);
+(lib._2_note = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// Layer_1
+	this.instance = new lib.CachedBmp_382();
+	this.instance.setTransform(-9.9,11.45,0.5,0.5);
+	this.instance_1 = new lib.CachedBmp_381();
+	this.instance_1.setTransform(7.55,-28,0.5,0.5);
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f("#F96868").s().p("Ag4EOQgggKgHgdQgGgeAXgdQAYgfAngNQAngPArAPQAGACAFAEIAAmXIATAAIAAG9QABAYgWAaQgWAfgoANQgVAIgVAAQgPAAgNgEgAATCbQgbALgcASQgdATgHANQgIANAEALQAEAKAPAAQAPAAAcgNQAbgOAbgSQAagUAFgIQAFgIgCgLQgDgLgMgBIgDAAQgMAAgZAJg");
+	this.shape.setTransform(-0.2348,-0.5795);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.instance_1},{t:this.instance}]}).to({state:[{t:this.shape}]},1).wait(1));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-9.9,-28,19.5,55);
+(lib.stop = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// 레이어_1
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f("#FFFFFF").s().p("Ag/BdQgMAAgIgIQgJgJABgLIAAiBQgBgLAJgJQAIgHAMgBIB/AAQAMABAIAHQAIAJAAALIAACBQAAALgIAJQgIAIgMAAg");
+	this.shape.setTransform(-0.6443,-0.7241,1.6496,1.6496);
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("#636466").s().p("AizC0QhLhKABhqQgBhoBLhLQBKhKBpgBQBpABBLBKQBKBLAABoQAABqhKBKQhLBLhpAAQhpAAhKhLg");
+	this.shape_1.setTransform(-0.6443,-0.7241,1.6496,1.6496);
+	this.shape_2 = new cjs.Shape();
+	this.shape_2.graphics.f().s("#FFFFFF").ss(4,1,1).p("AH4AAQAADRiUCUQiTCTjRAAQjQAAiTiTQiUiUAAjRQAAjQCUiTQCTiUDQAAQDRAACTCUQCUCTAADQg");
+	this.shape_2.setTransform(-0.525,-0.625);
+	this.shape_3 = new cjs.Shape();
+	this.shape_3.graphics.f("#636466").s().p("AljFlQiUiUAAjRQAAjQCUiTQCTiUDQAAQDRAACTCUQCUCTAADQQAADRiUCUQiTCTjRAAQjQAAiTiTg");
+	this.shape_3.setTransform(-0.525,-0.625);
+	this.shape_4 = new cjs.Shape();
+	this.shape_4.graphics.f("#ADAEB1").s().p("AkZEaQh1h0AAimQAAikB1h1QB0h1ClAAQClAAB1B1QB1B1AACkQAACmh1B0Qh1B1ilAAQilAAh0h1g");
+	this.shape_4.setTransform(-0.4,-0.5);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_1},{t:this.shape,p:{scaleX:1.6496,scaleY:1.6496,x:-0.6443,y:-0.7241}}]}).to({state:[{t:this.shape_3},{t:this.shape_2},{t:this.shape,p:{scaleX:1.9796,scaleY:1.9796,x:-0.5347,y:-0.6059}}]},1).to({state:[{t:this.shape_4},{t:this.shape,p:{scaleX:1.5673,scaleY:1.5673,x:-0.4146,y:-0.5012}}]},1).wait(1));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-52.9,-53,104.8,104.8);
+(lib.singalongno = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// Layer_2
+	this.instance = new lib.CachedBmp_379();
+	this.instance.setTransform(-70.5,-26.75,0.5,0.5);
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f("#FFFFFF").s().p("AAfBvQgPAAABgPIAAg4IhEAAQgLgBAAgOQAAgNALAAICmAAQALgBAAAOQAAAPgLAAIhEAAIAAA4QAAAMgMADgAHhBfQgPgBABgOIAAiwQgBgNAPgBIABAAQAQAAAAAOIAACwQAAAPgQAAIgBAAgAihBfQgPAAABgPIAAixIAAgBQABgMANAAIABAAQAPAAAAAOIAAA3IAUAAQALAAAAANIAAAEIAAABQgBAKgKABIgUAAIAABcIAAABIAAACQgCAMgNAAgAlvBQIAAixQAAgNAPAAQAPAAAAANIAAA4IARAAQAMgBAAAOQAAAPgMAAIgRAAIAABdQAAAOgPABQgPgBAAgOgACOBMQgKgBAAgOQAAgNAKAAICnAAQAMgBAAAOQAAAPgMAAgAFeAzIgDgCQgGgCgDgEQgDgFABgGQAAgHAFgDQAsgbAKgMQAJgLABgVIAAgNQAAgEgEAAIg1AAQgKgBAAgNQAAgNAKAAIBCAAIABAAQALgBAEAEIAAAAQAFAFAAALIAAAaQAAAfgOAQQgOAQgxAhQgEADgDAAgAkfAtIgCAAIgHgDQgCgDAAgEIgBgDIAAgBIAAg2IAAgDIABgCIACgGIAAAAQAEgDAGgBIAGAAIArAAQAAAAABAAQAAgBABAAQAAAAAAgBQABAAAAgBIAAAAIABAAIAAgCIAAgVQAAgEgEAAIgzAAQgLAAAAgOQAAgOALABIBIAAQAFABAEACIAAABQACAEACAGIAAA2QgCAJgCACQgDACgGACIgxABQgEAAAAADIAAAWQAAAEAEAAQAiAAAigEIAEAAQAIgBACAMQABAPgKACQglAEgzAAgAmtAkQgFgEABgLIAAhfQgBgLAFgFIAAAAQAEgEALABIAZAAQAMgBAAAOQAAAOgMAAIgLAAQgEAAAAAEIAABIQAAADADABIARgBQAFgCAEAEQACACABAHQABANgJADQgNACgVAAQgLAAgEgGgAnsAkQgFgFAAgKIAAhfQAAgLAFgFQAEgEALABIAbAAIACAAIAAAAIACABQAHABAAALQAAAMgIACIgRAAQgDAAAAAEIAABHQAAAFADAAIAPgBQALgCACANQABANgKADQgLACgVAAQgLgBgEgFgACrAWQgHgCgDgEQgFgEABgMIAAgeQgBgMAFgFIAAABQAEgEAJAAIBYAAQAEgBAAgEIAAgKQAAgEgEAAIhgAAQgKgBAAgNQAAgOALAAIBtAAQAGAAAEACIAGADIAAAAQAEAFAAALIAAAfQAAAMgEAEQgEADgHADIhbAAQgBAAgBAAQAAAAgBAAQAAABAAAAQAAABAAABIAAAKQAAAEADABIBjAAQALgBAAANQAAAPgLAAgAgXgEQgHgCgEgEQgEgDAAgNIAAhBQAAgFAFgFQAEgCAFAAIABAAIAEAAIAHACIADAEQACACAAAEIAAAPIBPAAIAAgPQAAgFAFgFQADgDAGABIABAAIACAAIAAAAQAEAAAEACIADAEIACAGIAABBQAAANgEADQgEAEgHACgAgIgiQgBABAAAAQABABAAAAQAAABAAAAQABAAABABIBMAAQADgBAAgEIAAgOIhRAAg");
+	this.shape.setTransform(-1.1523,0.25);
+	this.instance_1 = new lib.CachedBmp_380();
+	this.instance_1.setTransform(-67,-25.35,0.5,0.5);
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("#FFFFFF").s().p("AmwEMQhvAAhOhPQhPhPAAhuQAAhtBPhPQBPhPBuAAINhAAQBvAABOBPQBPBPAABtQAABuhPBPQhOBPhvAAg");
+	this.shape_1.setTransform(-0.4,0.025);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.instance}]}).to({state:[{t:this.shape}]},1).to({state:[{t:this.instance_1}]},1).to({state:[{t:this.shape_1}]},1).wait(1));
+	// Layer_3
+	this.shape_2 = new cjs.Shape();
+	this.shape_2.graphics.f("#FFCC00").s().p("AnGEEQhsAAhMhNQhMhMAAhrQAAhqBMhMQBMhNBsAAIONAAQBsAABMBNQBMBMAABqQAABrhMBMQhMBNhsAAg");
+	this.shape_2.setTransform(0,0.025);
+	this.shape_3 = new cjs.Shape();
+	this.shape_3.graphics.f("#FFFFCC").s().p("AnGEZQh0AAhShSQhThTAAh0QAAhzBThTQBShSB0AAIONAAQB0AABSBSQBTBTAABzQAAB0hTBTQhSBSh0AAgAp+i2QhMBMAABqQAABrBMBMQBMBNBsAAIONAAQBsAABMhNQBMhMAAhrQAAhqhMhMQhMhNhsAAIuNAAQhsAAhMBNg");
+	this.shape_3.setTransform(0,0.025);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[]}).to({state:[{t:this.shape_3},{t:this.shape_2}]},1).to({state:[]},1).wait(2));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-73.6,-28.1,147.2,56.3);
+(lib.play = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// 레이어_1
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f("#FFFFFF").s().p("AhQBnQgQgJAAgTIAAiWQAAgSAQgJQAQgJAPAJICCBMQAQAIAAASQAAASgQAKIiCBLQgHAFgIAAQgJAAgHgFg");
+	this.shape.setTransform(2.8669,-1.0325,1.6497,1.6497);
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("#636466").s().p("AizC0QhKhKgBhqQABhoBKhLQBLhKBogBQBqABBKBKQBLBLAABoQAABqhLBKQhKBLhqAAQhoAAhLhLg");
+	this.shape_1.setTransform(-0.1437,-1.0325,1.6497,1.6497);
+	this.shape_2 = new cjs.Shape();
+	this.shape_2.graphics.f().s("#FFFFFF").ss(4,1,1).p("AH4AAQAADRiTCUQiUCTjRAAQjQAAiUiTQiTiUAAjRQAAjQCTiUQCUiTDQAAQDRAACUCTQCTCUAADQg");
+	this.shape_2.setTransform(-0.05,-0.9);
+	this.shape_3 = new cjs.Shape();
+	this.shape_3.graphics.f("#636466").s().p("AlkFkQiTiTAAjRQAAjQCTiTQCUiUDQAAQDRAACUCUQCTCTAADQQAADRiTCTQiUCUjRAAQjQAAiUiUg");
+	this.shape_3.setTransform(-0.05,-0.9);
+	this.shape_4 = new cjs.Shape();
+	this.shape_4.graphics.f("#ADAEB1").s().p("AkZEaQh1h1AAilQAAikB1h1QB0h1ClAAQCmAAB0B1QB1B1AACkQAAClh1B1Qh0B1imAAQilAAh0h1g");
+	this.shape_4.setTransform(0,-0.875);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_1},{t:this.shape,p:{scaleX:1.6497,scaleY:1.6497,x:2.8669,y:-1.0325}}]}).to({state:[{t:this.shape_3},{t:this.shape_2},{t:this.shape,p:{scaleX:1.9797,scaleY:1.9797,x:3.5627,y:-0.9028}}]},1).to({state:[{t:this.shape_4},{t:this.shape,p:{scaleX:1.5674,scaleY:1.5674,x:2.8614,y:-0.8825}}]},1).wait(1));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-52.4,-53.3,104.8,104.8);
+(lib.pause = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// 레이어_1
+	this.instance = new lib.CachedBmp_376();
+	this.instance.setTransform(-42.25,-42.2,0.5,0.5);
+	this.instance_1 = new lib.CachedBmp_377();
+	this.instance_1.setTransform(-52.7,-52.6,0.5,0.5);
+	this.instance_2 = new lib.CachedBmp_378();
+	this.instance_2.setTransform(-39.95,-40.15,0.5,0.5);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.instance}]}).to({state:[{t:this.instance_1}]},1).to({state:[{t:this.instance_2}]},1).wait(1));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-52.7,-52.6,104.5,105);
+(lib.Listening = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// 레이어_1
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f("#000000").s().p("AhpBkIAAAAQgOAAAAgMIAAg2Ig9AAQgKAAgBgMQABgNAKAAICXAAQAJABAAAMIAAABIAAAAQAAALgJAAIg+AAIAAA2IAAABIAAABQgCAKgMAAIAAAAgACrBhIhqAAIgBAAQgGgBgDgCIAAgBQgEgEAAgKIAAghQAAgLAEgDQADgDAFgBIACAAIAAAAIABAAIBngBQAKAAAAANQAAAMgKAAIhWAAQgBAAAAAAQgBAAAAABQgBAAAAABQAAABAAAAIAAAOQAAABAAAAQAAABABABQAAAAABAAQAAABABAAIBYAAQAKAAAAAMQAAAMgKAAIAAAAgAjiBfIhhAAQgKAAgEgEIAAAAQgEgDAAgLIAAgnQAAgMAOAAQAOAAAAAMIAAAdQAAAAAAABQAAABABAAQAAABABAAQAAAAABAAIBUAAQAKAAAAANQAAAMgKAAIAAAAgAFbBWIAAAAQgOAAAAgNIAAigQAAgMAOAAIAAAAIABAAQAPAAAAAMIAACgQAAANgPAAIgBAAgADlAuIgFgCIAAABQgFgCgCgEIAAgBQgDgEAAgFQABgGAEgDQAogYAJgLQAIgKAAgTIAAgMQAAgBAAAAQAAgBAAgBQgBAAAAAAQgBgBAAAAIgwAAQgKAAAAgMQAAgNAKAAIA/AAQAJABADADIAAAAQAEAEAAALIAAAXQAAAbgMAQQgNAOgtAdQgDADgDAAgAj4AhIAAh4QgBgMAOAAQAPAAAAAMIAAAoIARAAQAKAAABANIAAABQgBAMgKAAIgRAAIAAA2QAAAMgPAAQgOAAABgMgAAmANQgGgCAAgJQAAgKAIAAICYAAQAIAAAAAKQAAAJgFACgAlmAIQgEgEAAgKIAAhGQAAgNAOAAQAOAAAAANIAAAUIAjAAIAAgUQAAgNAOAAQAOAAAAANIAABGQAAAKgEAEIAAAAQgEAEgKAAIg2AAIgBAAQgKAAgEgEgAlOgPQAAAEAEAAIAcAAQABAAABgBQAAAAABAAQAAgBAAAAQAAgBAAgBIAAgQIgjAAgAiugJIAAAAQgCgEABgEIAAgCQABgFAEgDIAAAAIACAAIAXgLIABAAIABgBIAHgFIABAAIAAAAQAJgEADgFQADgEAAgIIAAAAIgpAAQgJAAgBgNIAAAAIAAgBQABgLAJAAIBwAAQAKAAAAAMQAAANgKAAIgqAAIAAAAQABAFABAEIAAAAIAGAHIAAAAIAIAFIAAAAIAKAFIAAABIAWAKIACABIABAAQAFADABAEQABAEgDAGQgCAFgEADIgFABIgFgBIgjgSQgOgHgEgHQgEAHgOAIIgjARIgCABIgBAAIgCABQgHAAgEgJgACrgWIhqAAIgBAAQgGgBgCgDQgFgEAAgKIAAgiQAAgLAFgEQACgCAFgBIACAAIBogBQAKAAAAAMQAAANgKAAIhVAAQgBAAgBAAQAAAAgBABQAAAAAAABQAAABgBABIAAAPQABAAAAABQAAAAAAABQABAAAAAAQABABAAAAIBYAAQAKAAAAAMQAAAMgKAAIAAAAg");
+	this.shape.setTransform(-0.675,0.15);
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("#FCC012").s().p("AmxD4QhmAAhIhJQhJhJAAhmQAAhlBJhJQBIhJBmAAINjAAQBmAABIBJQBJBJAABlQAABmhJBJQhIBJhmAAg");
+	this.shape_1.setTransform(0,0.025);
+	this.shape_2 = new cjs.Shape();
+	this.shape_2.graphics.f("#FFFFFF").s().p("AmxEMQhuAAhPhPQhOhPAAhuQAAhuBOhOQBPhPBuAAINjAAQBuAABPBPQBOBPAABtQAABuhOBPQhPBPhuAAgApfiuQhJBJAABlQAABmBJBJQBIBJBmAAINjAAQBmAABIhJQBJhJAAhmQAAhlhJhJQhIhJhmAAItjAAQhmAAhIBJg");
+	this.shape_2.setTransform(0,0.025);
+	this.shape_3 = new cjs.Shape();
+	this.shape_3.graphics.f("#FFFFFF").s().p("AhvBpQgPAAABgNIAAg4IhBAAQgKAAAAgOQAAgNAKABICfAAQAKAAAAAMIAAACIAAAAQgBALgJABIhBAAIAAA4IAAABIAAACQgCAKgMAAgABEBmIgBAAQgHgBgCgDQgEgFAAgLIAAgiQAAgLAEgEQACgDAGAAIACgBIBtAAQALgBAAANQAAANgLAAIhaAAQgDAAAAAEIAAAOQAAADADACIBdAAQAKgBAAANQAAANgKAAgAlTBkQgLAAgEgEIAAAAQgFgEABgLIAAgpQgBgNAQAAQAOAAAAANIAAAeQAAADADABIBYAAQALgBAAAOQAAANgLAAgAFsBaQgOAAAAgNIAAioQAAgNAOAAIABAAQAQAAAAANIAACoQAAANgQAAgADwAwIgFgBIAAAAQgFgCgDgEIAAgBQgCgEAAgGQAAgFAFgEQApgZAKgMQAJgKAAgUIAAgNQAAgDgDgBIgyAAQgKAAAAgNQAAgNAKAAIBCAAQAJAAAEAEIAAAAQAEAFAAAKIAAAZQAAAdgNAQQgNAPgvAfQgDACgEAAgAkFAjIAAh+QAAgNAOAAQAPAAAAANIAAAqIATAAQALgBAAAOIAAABQgBANgKAAIgTAAIAAA5QAAANgPAAQgOAAAAgNgAAnAOQgGgCAAgKQAAgKAIgBICgAAQAJAAAAALQAAAJgFADgAlpANQgKAAgFgFQgEgEAAgKIAAhKQAAgNAPAAQAOAAAAANIAAAWIAmAAIAAgWQgBgNAPAAQAOAAAAANIAABKQAAAKgEAEQgEAEgKABgAlfgQQAAAEAEAAIAeAAQAEAAAAgEIAAgRIgmAAgAi3gKQgCgEABgDIAAgDQABgGAEgCIAAAAIACgBIAZgLIAAAAIACgBIAIgFQAJgFAEgFQADgFAAgHIgrAAQgKAAAAgOIAAAAIAAgBQAAgMAKAAIB1AAQALAAAAANQAAAOgLAAIgrAAQAAAEACAFIAAAAQABAEAEADIABABIAIAFIABAAIAJAFIAXAMIACAAIACABQAFADABAEQABAEgCAHQgDAFgFACIgEACIgGgCIglgSQgOgIgEgGQgEAGgPAIIglATIgDABIAAAAIgCAAQgIAAgEgJgABEgXIgBAAQgGgBgDgDQgEgFAAgLIAAgjQAAgLAEgFQACgCAGgBIBvAAQALgBAAANQAAANgLAAIhZAAQgDAAAAAEIAAAQQAAABAAAAQAAABAAAAQABABAAAAQABABAAAAIBcAAQALgBAAANQAAANgLAAg");
+	this.shape_3.setTransform(-0.6775,0.175);
+	this.shape_4 = new cjs.Shape();
+	this.shape_4.graphics.f("#000000").s().p("AhpBkQgOAAAAgMIAAg2Ig9AAQgKAAAAgNQAAgMAKAAICXAAQAJAAABAMIAAABIAAABQgBAKgJABIg+AAIAAA2IAAABIAAABQgCAKgMAAgABBBhIgBAAQgGgBgDgDQgEgEABgLIAAggQgBgLAEgEQADgCAFgBIACAAIBogBQAKAAAAAMQAAANgKAAIhWAAQgBAAAAAAQgBAAAAABQgBAAAAABQAAAAAAABIAAAOQAAAAAAABQAAABABAAQAAABAAAAQABABABAAIBYAAQAKgBAAANQAAAMgKAAgAlDBfQgKAAgEgEIAAAAQgEgEAAgKIAAgnQAAgMAOAAQAOAAAAAMIAAAcQAAABAAABQAAABABAAQAAABABAAQAAAAABAAIBUAAQAKAAAAANQAAAMgKAAgAFbBWQgOgBABgMIAAigQgBgMAOAAIABAAQAPAAAAAMIAACgQAAANgPAAgADlAuIgFgCIAAABQgFgCgCgEIAAgBQgDgEAAgFQABgGAEgDQAogYAJgLQAIgKABgTIAAgMQgBgBAAgBQAAAAAAgBQgBAAAAAAQgBgBAAAAIgwAAQgKAAAAgMQAAgNAKAAIA/AAQAJAAADAEIAAAAQAEAEAAAKIAAAYQAAAbgMAQQgNAOgtAdIgGADgAj4AhIAAh4QgBgMAOAAQAPAAAAAMIAAAoIARAAQALAAAAANIAAABQgBAMgKAAIgRAAIAAA2QAAAMgPAAQgOAAABgMgAAmANQgGgCAAgJQAAgKAIAAICYAAQAIAAAAAKQAAAJgFACgAlXAMQgKAAgFgEQgEgEABgKIAAhHQgBgMAOAAQAOAAAAAMIAAAVIAkAAIAAgVQgBgMAOAAQAOAAAAAMIAABHQAAAKgEAEQgEAEgKAAgAlOgPQAAAEAEAAIAcAAQAEgBAAgDIAAgQIgkAAgAiugJQgCgEABgEIAAgCQABgGAEgCIAAAAIACAAIAXgLIABAAIABgBIAIgFQAJgEADgFQADgFABgHIgqAAQgJAAAAgNIAAAAIAAgBQAAgMAJABIBwAAQAKgBAAANQAAANgKAAIgpAAQAAAEABAEIAAABQACADAEAEIAAAAIAIAFIABAAIAJAFIAWALIACABIABAAQAFADABAEQABAEgCAGQgDAFgEACIgFACIgFgCIgjgRQgOgHgEgHQgEAHgOAHIgjASIgCABIgBAAIgCAAQgHAAgEgIgABBgWIgBAAQgGgBgCgDQgFgEABgLIAAghQgBgLAFgEQACgCAFgBIBqgBQAKAAAAAMQAAANgKAAIhVAAQgBAAgBAAQAAAAgBABQAAAAAAABQAAAAAAABIAAAPQAAABAAABQAAAAAAABQAAAAABAAQAAABABAAIBYAAQAKgBAAANQAAAMgKAAg");
+	this.shape_4.setTransform(-0.6698,0.2028,0.9499,0.9499);
+	this.shape_5 = new cjs.Shape();
+	this.shape_5.graphics.f("#FFEBB3").s().p("AmbDrQhhAAhFhFQhFhFAAhhQAAhgBFhFQBFhFBhAAIM3AAQBhAABFBFQBFBFAABgQAABhhFBFQhFBFhhAAg");
+	this.shape_5.setTransform(-0.05,0.075);
+	this.shape_6 = new cjs.Shape();
+	this.shape_6.graphics.f("#FFFFFF").s().p("AmbD+QhpAAhLhKQhKhLAAhpQAAhoBKhLQBLhKBpAAIM3AAQBpAABLBKQBKBLAABoQAABphKBLQhLBKhpAAgApBilQhFBFAABgQAABhBFBFQBFBFBhAAIM3AAQBhAABFhFQBFhFAAhhQAAhghFhFQhFhFhhAAIs3AAQhhAAhFBFg");
+	this.shape_6.setTransform(-0.05,0.075);
+	this.shape_7 = new cjs.Shape();
+	this.shape_7.graphics.f("#FFFFFF").s().p("AmxEMQhuAAhPhPQhOhPAAhuQAAhuBOhOQBPhPBuAAINjAAQBuAABPBPQBOBPAABtQAABuhOBPQhPBPhuAAg");
+	this.shape_7.setTransform(0,0.025);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_2},{t:this.shape_1},{t:this.shape}]}).to({state:[{t:this.shape_3}]},1).to({state:[{t:this.shape_6},{t:this.shape_5},{t:this.shape_4}]},1).to({state:[{t:this.shape_7}]},1).wait(1));
+	// Layer_2
+	this.shape_8 = new cjs.Shape();
+	this.shape_8.graphics.f("#FFCC00").s().p("AnGEEQhsAAhMhNQhMhMAAhrQAAhqBMhMQBMhNBsAAIONAAQBsAABMBNQBMBMAABqQAABrhMBMQhMBNhsAAg");
+	this.shape_8.setTransform(0,0.025);
+	this.shape_9 = new cjs.Shape();
+	this.shape_9.graphics.f("#FFFFCC").s().p("AnGEZQh0AAhShSQhThTAAh0QAAhzBThTQBShSB0AAIONAAQB0AABSBSQBTBTAABzQAAB0hTBTQhSBSh0AAgAp+i2QhMBMAABqQAABrBMBMQBMBNBsAAIONAAQBsAABMhNQBMhMAAhrQAAhqhMhMQhMhNhsAAIuNAAQhsAAhMBNg");
+	this.shape_9.setTransform(0,0.025);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[]}).to({state:[{t:this.shape_9},{t:this.shape_8}]},1).to({state:[]},1).wait(2));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-73.6,-28.1,147.2,56.3);
+(lib.listentosongno = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// Layer_2
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f("#000000").s().p("ABJBjQgKAAgFgEQgDgFAAgKIAAghQAAgKADgEIAAAAQAFgEAKAAIBjAAQAKgBAAANQAAAMgKAAIhWAAQgBAAAAAAQgBABAAAAQgBABAAAAQAAABAAABIAAANQAAABAAABQAAAAABABQAAAAABABQAAAAABAAIBYAAQAKAAAAAMQAAANgKAAgAFRBKIAAifQAAgNAOAAQAOAAAAANIAACfQAAANgOAAQgOAAAAgNgAg0BLIAAhUIgNAAIAABLQAAAMgOAAQgNAAABgMIAAiWQgBgMANAAQAOAAAAAMIAAAxIANAAIAAgzQgBgMANAAQAOAAAAAMIAAChQAAAMgOAAQgNAAABgMgAliBGQgKAAAAgNQAAgNAKABIA+AAIAAglIggAAQgKAAgFgEQgEgEABgKIAAhBQgBgMAPAAQAOAAAAAMIAAA3QAAABAAABQAAAAABABQAAAAABABQABAAAAAAIBZAAQALgBAAANQAAAMgLAAIgqAAIAAAlIA9AAQALgBgBANQABANgLAAgADjAuQgEgCgDgEIAAAAQgCgFgBgFQABgFAFgDQAngZAJgLQAJgKAAgTIAAgMQAAgBAAAAQAAgBgBAAQAAgBgBAAQgBAAAAAAIgwAAQgJAAgBgNQABgNAJABIA8AAQAKgBAFAEQAEAFAAAKIAAAXQAAAbgNAPQgMAQguAdQgDACgDAAIgEgBgAizAmQgEgFAAgKIAAglQAAgLAEgEQAEgEAKAAIAbAAQADAAABgEIAAgSQAAgBgBAAQAAgBAAAAQgBgBAAAAQgBAAgBAAIgjAAQgKAAAAgNQAAgNAKABIAvAAQAKgBAEAEIAAABQAFAEAAAKIAAAmQAAAKgFAEQgEAEgKAAIgaAAQgBAAgBAAQgBABAAAAQgBABAAAAQAAABAAABIAAASQAAABAAABQAAAAABABQAAAAABABQABAAABAAQAbgBAQgCQAFgBADADQACADABAGQADAMgLACQgRADgqAAQgKAAgEgEgAArAQQgKAAAAgNQAAgLAKAAICXAAQALAAAAALQAAANgLAAgABJgUQgKAAgEgEQgEgFAAgKIAAgiQAAgKAEgFQAEgEAKABIBiAAQALgBAAANQAAAMgLAAIhUAAQgBAAgBAAQAAABgBAAQAAABAAAAQgBABAAABIAAAPQAAABABAAQAAABAAAAQABABAAAAQABAAABAAIBWAAQALAAAAAMQAAANgLAAg");
+	this.shape.setTransform(-0.5,0.175);
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("#FCC012").s().p("AmxD4QhmAAhIhJQhJhJAAhmQAAhlBJhJQBIhJBmAAINjAAQBmAABIBJQBJBJAABlQAABmhJBJQhIBJhmAAg");
+	this.shape_1.setTransform(0,0.025);
+	this.shape_2 = new cjs.Shape();
+	this.shape_2.graphics.f("#FFFFFF").s().p("AmxEMQhuAAhPhPQhOhPAAhuQAAhuBOhOQBPhPBuAAINjAAQBuAABPBPQBOBPAABtQAABuhOBPQhPBPhuAAgApfiuQhJBJAABlQAABmBJBJQBIBJBmAAINjAAQBmAABIhJQBJhJAAhmQAAhlhJhJQhIhJhmAAItjAAQhmAAhIBJg");
+	this.shape_2.setTransform(0,0.025);
+	this.shape_3 = new cjs.Shape();
+	this.shape_3.graphics.f("#FFFFFF").s().p("ABMBoQgKAAgFgEQgEgFABgLIAAgiQgBgLAEgFIAAABQAFgFAKAAIBpAAQAKAAAAANQAAANgKAAIhbAAQgBAAAAAAQgBAAAAABQAAAAgBABQAAABAAABIAAAOQAAAEADAAIBdAAQAKAAAAANQAAANgKAAgAFiBOIAAinQgBgOAPAAQAPAAAAAOIAACnQAAAOgPAAQgPAAABgOgAg3BPIAAhZIgOAAIAABQQAAAMgOAAQgOAAABgMIAAieQgBgMAOAAQAOAAAAAMIAAA0IAOAAIAAg3QAAgMANAAQAPAAAAAMIAACqQAAANgPAAQgNAAAAgNgAl0BKQgKAAAAgOQAAgNAKAAIBBAAIAAgmIgiAAQgKgBgEgEQgFgEABgKIAAhEQgBgOAQAAQAOAAAAAOIAAA5QAAABAAABQABAAAAABQABAAAAABQABAAABAAIBdAAQALgBAAAOQAAANgLAAIgsAAIAAAmIBAAAQALAAAAANQAAAOgLAAgADvAxQgFgCgDgFIAAAAQgDgFAAgFQABgGAFgDQApgaAKgLQAIgLABgUIAAgMQAAgEgEAAIgxAAQgLAAAAgNQAAgOALABIA/AAQAKgBAFAEQAEAFAAALIAAAYQAAAdgNAPQgNARgwAeQgDACgDAAIgEAAgAi8AoQgFgFABgLIAAgnQgBgLAFgFQAEgEALABIAcAAQAEgBAAgEIAAgSQAAgEgEAAIglAAQgKAAAAgOQAAgNAKABIAyAAQALgBAEAEIAAABQAEAEAAALIAAAnQAAALgEAFQgEAEgLAAIgcAAQgEAAAAAEIAAATQAAAEAEAAQAdgBARgCQAFgBADADQADADABAGQACANgLACQgSADgsAAQgLAAgEgEgAAtARQgKAAAAgOQAAgMAKABICfAAQALgBAAAMQAAAOgLAAgABNgVQgLAAgEgEQgFgFABgLIAAgjQgBgLAFgFQAEgEALAAIBnAAQALAAAAANQAAANgLAAIhZAAQgBAAgBAAQAAAAAAABQgBAAAAABQAAABAAABIAAAPQAAAEADAAIBbAAQALAAAAANQAAANgLAAg");
+	this.shape_3.setTransform(-0.525,0.175);
+	this.shape_4 = new cjs.Shape();
+	this.shape_4.graphics.f("#FFCC00").s().p("AnGEEQhsAAhMhNQhMhMAAhrQAAhqBMhMQBMhNBsAAIONAAQBsAABMBNQBMBMAABqQAABrhMBMQhMBNhsAAg");
+	this.shape_4.setTransform(0,0.025);
+	this.shape_5 = new cjs.Shape();
+	this.shape_5.graphics.f("#FFFFCC").s().p("AnGEZQh0AAhShSQhThTAAh0QAAhzBThTQBShSB0AAIONAAQB0AABSBSQBTBTAABzQAAB0hTBTQhSBSh0AAgAp+i2QhMBMAABqQAABrBMBMQBMBNBsAAIONAAQBsAABMhNQBMhMAAhrQAAhqhMhMQhMhNhsAAIuNAAQhsAAhMBNg");
+	this.shape_5.setTransform(0,0.025);
+	this.shape_6 = new cjs.Shape();
+	this.shape_6.graphics.f("#FFEBB3").s().p("AmbDrQhhAAhFhFQhFhFAAhhQAAhgBFhFQBFhFBhAAIM3AAQBhAABFBFQBFBFAABgQAABhhFBFQhFBFhhAAg");
+	this.shape_6.setTransform(0.15,0.275);
+	this.shape_7 = new cjs.Shape();
+	this.shape_7.graphics.f("#FFFFFF").s().p("AmbD+QhpAAhLhKQhKhLAAhpQAAhoBKhLQBLhKBpAAIM3AAQBpAABLBKQBKBLAABoQAABphKBLQhLBKhpAAgApBilQhFBFAABgQAABhBFBFQBFBFBhAAIM3AAQBhAABFhFQBFhFAAhhQAAhghFhFQhFhFhhAAIs3AAQhhAAhFBFg");
+	this.shape_7.setTransform(0.15,0.275);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_2},{t:this.shape_1},{t:this.shape,p:{scaleX:1,scaleY:1,x:-0.5,y:0.175}}]}).to({state:[{t:this.shape_5},{t:this.shape_4},{t:this.shape_3}]},1).to({state:[{t:this.shape_7},{t:this.shape_6},{t:this.shape,p:{scaleX:0.9498,scaleY:0.9498,x:-0.4749,y:0.1662}}]},1).to({state:[{t:this.shape_2},{t:this.shape_1},{t:this.shape,p:{scaleX:1,scaleY:1,x:-0.5,y:0.175}}]},1).wait(1));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-73.6,-28.1,147.2,56.3);
+(lib.가사_내친구이름은 = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = true; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	// Layer_1
+	this.instance = new lib.CachedBmp_350();
+	this.instance.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_1 = new lib.CachedBmp_351();
+	this.instance_1.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_2 = new lib.CachedBmp_352();
+	this.instance_2.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_3 = new lib.CachedBmp_353();
+	this.instance_3.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_4 = new lib.CachedBmp_354();
+	this.instance_4.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_5 = new lib.CachedBmp_355();
+	this.instance_5.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_6 = new lib.CachedBmp_356();
+	this.instance_6.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_7 = new lib.CachedBmp_357();
+	this.instance_7.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_8 = new lib.CachedBmp_358();
+	this.instance_8.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_9 = new lib.CachedBmp_359();
+	this.instance_9.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_10 = new lib.CachedBmp_360();
+	this.instance_10.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_11 = new lib.CachedBmp_361();
+	this.instance_11.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_12 = new lib.CachedBmp_362();
+	this.instance_12.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_13 = new lib.CachedBmp_363();
+	this.instance_13.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_14 = new lib.CachedBmp_364();
+	this.instance_14.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_15 = new lib.CachedBmp_365();
+	this.instance_15.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_16 = new lib.CachedBmp_366();
+	this.instance_16.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_17 = new lib.CachedBmp_367();
+	this.instance_17.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_18 = new lib.CachedBmp_368();
+	this.instance_18.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_19 = new lib.CachedBmp_369();
+	this.instance_19.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_20 = new lib.CachedBmp_370();
+	this.instance_20.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_21 = new lib.CachedBmp_371();
+	this.instance_21.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_22 = new lib.CachedBmp_372();
+	this.instance_22.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_23 = new lib.CachedBmp_373();
+	this.instance_23.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_24 = new lib.CachedBmp_374();
+	this.instance_24.setTransform(-406.85,-104.15,0.5,0.5);
+	this.instance_25 = new lib.CachedBmp_375();
+	this.instance_25.setTransform(-406.85,-104.15,0.5,0.5);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.instance}]}).to({state:[{t:this.instance_1}]},1).to({state:[{t:this.instance_2}]},1).to({state:[{t:this.instance_3}]},1).to({state:[{t:this.instance_4}]},1).to({state:[{t:this.instance_5}]},1).to({state:[{t:this.instance_6}]},1).to({state:[{t:this.instance_7}]},1).to({state:[{t:this.instance_8}]},1).to({state:[{t:this.instance_9}]},1).to({state:[{t:this.instance_10}]},1).to({state:[{t:this.instance_11}]},1).to({state:[{t:this.instance_12}]},1).to({state:[{t:this.instance_13}]},1).to({state:[{t:this.instance_14}]},1).to({state:[{t:this.instance_15}]},1).to({state:[{t:this.instance_16}]},1).to({state:[{t:this.instance_17}]},1).to({state:[{t:this.instance_18}]},1).to({state:[{t:this.instance_19}]},1).to({state:[{t:this.instance_20}]},1).to({state:[{t:this.instance_21}]},1).to({state:[{t:this.instance_22}]},1).to({state:[{t:this.instance_23}]},1).to({state:[{t:this.instance_24}]},1).to({state:[{t:this.instance_25}]},1).to({state:[]},1).wait(1));
+	// Layer_2
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f("#FFFFFF").s().p("EhFXAULMAAAgoWMCKvAAAMAAAAoWg");
+	this.shape.setTransform(2.15,0.85);
+	this.timeline.addTween(cjs.Tween.get(this.shape).wait(25).to({_off:true},1).wait(1));
+	this._renderFirstFrame();
+}).prototype = p = new cjs.MovieClip();
+p.nominalBounds = new cjs.Rectangle(-441.8,-128.3,888,258.3);
+// stage content:
+(lib._03_01_내친구이름 = function(mode,startPosition,loop,reversed) {
+if (loop == null) { loop = false; }
+if (reversed == null) { reversed = false; }
+	var props = new Object();
+	props.mode = mode;
+	props.startPosition = startPosition;
+	props.labels = {"1절":0,"1절":604,"1절1":1208,"1절1":1333,노래듣기:0,반주듣기:604,따라부르:1208};
+	props.loop = loop;
+	props.reversed = reversed;
+	cjs.MovieClip.apply(this,[props]);
+	this.actionFrames = [0,603,604,1207,1208,1802];
+	this.streamSoundSymbolsList[0] = [{id:"_3102내친구이름학생가",startFrame:0,endFrame:604,loop:1,offset:0}];
+	this.streamSoundSymbolsList[604] = [{id:"_3103내친구이름반주가",startFrame:604,endFrame:1208,loop:1,offset:0}];
+	this.streamSoundSymbolsList[1208] = [{id:"_3103내친구이름반주가",startFrame:1208,endFrame:1803,loop:1,offset:0}];
+	// timeline functions:
+	this.frame_0 = function() {
+		this.clearAllSoundStreams();
+		var soundInstance = playSound("_3102내친구이름학생가",0);
+		this.InsertIntoSoundStreamData(soundInstance,0,604,1);
+		this.stop();
+		var _this = this;
+		/*메뉴 네비게이션*/
+		_this.listen_btn.on('click', function () {
+			_this.gotoAndStop('노래듣기');
+		});
+		_this.listen2_btn.on('click', function () {
+			_this.gotoAndStop('반주듣기');
+		});
+		_this.singAlong_btn.on('click', function () {
+			_this.gotoAndStop('따라부르');
+		});
+		/*플레이컨트롤*/
+		_this.play_btn.on('click', function () {
+			_this.play();
+		});
+		_this.pause_btn.on('click', function () {
+			_this.stop();
+		});
+		_this.stop1_btn.on('click', function () {
+			_this.gotoAndStop('노래듣기');
+		});
+		_this.stop3_btn.on('click', function () {
+			_this.gotoAndStop('반주듣기');
+		});
+		_this.stop4_btn.on('click', function(){
+			_this.gotoAndStop('따라부르');
+		});
+	}
+	this.frame_603 = function() {
+		this.gotoAndStop('노래듣기');
+	}
+	this.frame_604 = function() {
+		var soundInstance = playSound("_3103내친구이름반주가",0);
+		this.InsertIntoSoundStreamData(soundInstance,604,1208,1);
+		this.stop();
+	}
+	this.frame_1207 = function() {
+		this.gotoAndStop('반주듣기');
+	}
+	this.frame_1208 = function() {
+		var soundInstance = playSound("_3103내친구이름반주가",0);
+		this.InsertIntoSoundStreamData(soundInstance,1208,1803,1);
+		this.stop();
+	}
+	this.frame_1802 = function() {
+		this.gotoAndStop('따라부르');
+	}
+	// actions tween:
+	this.timeline.addTween(cjs.Tween.get(this).call(this.frame_0).wait(603).call(this.frame_603).wait(1).call(this.frame_604).wait(603).call(this.frame_1207).wait(1).call(this.frame_1208).wait(594).call(this.frame_1802).wait(1));
+	// play_button
+	this.stop1_btn = new lib.stop();
+	this.stop1_btn.name = "stop1_btn";
+	this.stop1_btn.setTransform(717.4,750.2,0.6044,0.6044,0,0,0,-0.4,-0.4);
+	new cjs.ButtonHelper(this.stop1_btn, 0, 1, 2);
+	this.pause_btn = new lib.pause();
+	this.pause_btn.name = "pause_btn";
+	this.pause_btn.setTransform(640.25,750.45,0.6044,0.6044);
+	new cjs.ButtonHelper(this.pause_btn, 0, 1, 2);
+	this.play_btn = new lib.play();
+	this.play_btn.name = "play_btn";
+	this.play_btn.setTransform(562.5,750.45,0.6044,0.6044);
+	new cjs.ButtonHelper(this.play_btn, 0, 1, 2);
+	this.stop3_btn = new lib.stop();
+	this.stop3_btn.name = "stop3_btn";
+	this.stop3_btn.setTransform(717.4,750.2,0.6044,0.6044,0,0,0,-0.4,-0.4);
+	new cjs.ButtonHelper(this.stop3_btn, 0, 1, 2);
+	this.stop4_btn = new lib.stop();
+	this.stop4_btn.name = "stop4_btn";
+	this.stop4_btn.setTransform(717.4,750.2,0.6044,0.6044,0,0,0,-0.4,-0.4);
+	new cjs.ButtonHelper(this.stop4_btn, 0, 1, 2);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.play_btn},{t:this.pause_btn},{t:this.stop1_btn}]}).to({state:[{t:this.play_btn},{t:this.pause_btn},{t:this.stop3_btn}]},604).to({state:[{t:this.play_btn},{t:this.pause_btn},{t:this.stop4_btn}]},604).wait(595));
+	// intro
+	this.shape = new cjs.Shape();
+	this.shape.graphics.f("rgba(255,72,72,0.498)").s().p("ABQH6QgpABAAgpIgEi0QhgAEhfAAQheABhagCQgvgCgTggQgRghAIgvQAXiOAKiRQALiSgCigQAAgfAPgPQAQgOAWAAICJAAQAbAAAOAQQANARgBAbQgDCNgICAQgKCCgOBlQA1ACAwAAIBhAAIgKolQAAgoAnAAIClAAQApAAgCAoIgIIdIAxgCQAZAAAbgDQAVgCAKAGQAKAHADASIAPByQAFApgkAEIhBAHIhCAGIgDDCQAAApgpgBg");
+	this.shape.setTransform(142.4411,478.0967,0.6814,0.6814);
+	this.shape_1 = new cjs.Shape();
+	this.shape_1.graphics.f("rgba(255,72,72,0.498)").s().p("AgYILQhmgChSghQhSghg8g5QgMgLgFgNQgEgOALgQIA4hMQAagjAfAYQAlAdA8ATQA7AUA9AAQBTAAAlgdQAkgdgDgtQgBgZgQgTQgPgSgYgMQgZgNgdgFQgcgFgcAAIijABQgTAAgLgLQgKgLAAgSIAAhuQAAgTAKgLQALgLATAAICnABQAnAAAigHQAigHAZgRQAZgQANgYQAOgXAAgfQgBg0gwgcQgvgbhHAAQhBAAg3ASQg3ASgwAgQgSANgQgDQgRgCgLgUIg9h2QgKgUAGgNQAGgPASgNQA5gsBUgdQBUgeBlAAQBZAABJAXQBKAXA0ApQA0AqAcA6QAdA7AABHQAABagwBEQgxBChMAaQAcAGAbAUQAaAUAUAcQAUAbAMAiQALAiAAAjQAAA9gbAyQgbAzgxAkQgwAlhEAVQg/AShMAAIgMAAg");
+	this.shape_1.setTransform(142.1298,477.8447,0.6814,0.6814);
+	this.shape_2 = new cjs.Shape();
+	this.shape_2.graphics.f("rgba(255,72,72,0.498)").s().p("AkDIFQgvAAAAgwIAAhdQAAgXALgMQAKgLAcgTQBEgtBCg3QBDg4A3g7QA2g7Akg6QAjg8AGgxQAEgigKgdQgJgegTgVQgTgVgegNQgdgMgkAAQg2AAgvAZQguAYgiAsQgMARgRgBQgRgBgOgLIhvhMQgagZAVgfQA7hZBYgzQBXgzB7AAQBeAABIAdQBHAdAwAxQAwAxAXBAQAXBAgEBIQgEBIggBGQghBEgwA/QgwA/g6A0Qg5A1g2AmQBRgEBNgIQBOgHA8gKQAngIAGAjIAUBwQAIAogkAHQiRAXiTAKQh3AIiJAAIhDAAg");
+	this.shape_2.setTransform(143.0155,477.4146,0.6814,0.6814);
+	this.shape_3 = new cjs.Shape();
+	this.shape_3.graphics.f("rgba(255,72,72,0.498)").s().p("AAMH8QgoABAAgpIgMruIhwAFQgWAAgMgOQgNgMAAgWIAAiIQAAgUANgOQAMgNAWAAIEwAFQAXAAAMAMQANANAAAWIgPOcQAAApgogBg");
+	this.shape_3.setTransform(142.5681,477.9604,0.6814,0.6814);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[]}).to({state:[{t:this.shape}]},124).to({state:[{t:this.shape_1}]},13).to({state:[{t:this.shape_2}]},13).to({state:[{t:this.shape_3}]},13).to({state:[]},13).to({state:[{t:this.shape}]},552).to({state:[{t:this.shape_1}]},13).to({state:[{t:this.shape_2}]},13).to({state:[{t:this.shape_3}]},13).to({state:[]},13).to({state:[{t:this.shape}]},552).to({state:[{t:this.shape_1}]},13).to({state:[{t:this.shape_2}]},13).to({state:[{t:this.shape_3}]},13).to({state:[]},13).wait(419));
+	// note
+	this.instance = new lib.rest_4("single",0);
+	this.instance.setTransform(829.85,566.8);
+	this.instance_1 = new lib.rest_4("single",0);
+	this.instance_1.setTransform(1091.05,381.5);
+	this.instance_2 = new lib.rest_4("single",0);
+	this.instance_2.setTransform(624.2,381.5);
+	this.instance_3 = new lib._2_note_dot2("single",0);
+	this.instance_3.setTransform(1008.3,567.8);
+	this.instance_4 = new lib._4_note("single",0);
+	this.instance_4.setTransform(938.9,580.6);
+	this.instance_5 = new lib._8_note("single",0);
+	this.instance_5.setTransform(540.3,567.8);
+	this.instance_6 = new lib._8_note("single",0);
+	this.instance_6.setTransform(509.25,561.15);
+	this.instance_7 = new lib._8_note_under("single",0);
+	this.instance_7.setTransform(256.1,586.75);
+	this.instance_8 = new lib._8_note("single",0);
+	this.instance_8.setTransform(399.5,369.3);
+	this.instance_9 = new lib._8_note("single",0);
+	this.instance_9.setTransform(364.25,375.75);
+	this.instance_10 = new lib._8_note("single",0);
+	this.instance_10.setTransform(901.05,382.05);
+	this.instance_11 = new lib._8_note("single",0);
+	this.instance_11.setTransform(865.55,375.5);
+	this.instance_12 = new lib._8_note("single",0);
+	this.instance_12.setTransform(830.2,382.05);
+	this.instance_13 = new lib._4_note("single",0);
+	this.instance_13.setTransform(716.15,375.75);
+	this.instance_14 = new lib._2_note_dot("single",0);
+	this.instance_14.setTransform(657.95,560.8);
+	this.instance_15 = new lib._4_note("single",0);
+	this.instance_15.setTransform(885.3,567.3);
+	this.instance_16 = new lib._4_note("single",0);
+	this.instance_16.setTransform(569.35,554.6);
+	this.instance_17 = new lib._8_note("single",0);
+	this.instance_17.setTransform(476.7,561.15);
+	this.instance_18 = new lib._4_note("single",0);
+	this.instance_18.setTransform(348,567.3);
+	this.instance_19 = new lib._8_note("single",0);
+	this.instance_19.setTransform(444.85,561.15);
+	this.instance_20 = new lib._4_note("single",0);
+	this.instance_20.setTransform(280.75,580.6);
+	this.instance_21 = new lib._8_note_under("single",0);
+	this.instance_21.setTransform(223.7,586.75);
+	this.instance_22 = new lib._2_note("single",0);
+	this.instance_22.setTransform(949.25,394.7);
+	this.instance_23 = new lib._8_note("single",0);
+	this.instance_23.setTransform(794.85,375.5);
+	this.instance_24 = new lib._2_note("single",0);
+	this.instance_24.setTransform(483.15,382.05);
+	this.instance_25 = new lib._8_note("single",0);
+	this.instance_25.setTransform(434.85,375.75);
+	this.instance_26 = new lib._8_note("single",0);
+	this.instance_26.setTransform(328.1,369.3);
+	this.instance_27 = new lib._4_note("single",0);
+	this.instance_27.setTransform(249.6,368.95);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]}).to({state:[{t:this.instance_27,p:{startPosition:1}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},176).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:1}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},14).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:1}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:1}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:1}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:1}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:1}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},28).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:1}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},11).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:1}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},16).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:1}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:1}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:1}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:1}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:1}},{t:this.instance,p:{startPosition:0}}]},28).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:1}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:1}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:1}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:1}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},15).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:1}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:1}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:1}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:1}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:1}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},8).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:1}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:1}}]},40).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:1}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},12).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:1}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:1}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},45).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},68).to({state:[{t:this.instance_27,p:{startPosition:1}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},176).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:1}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},14).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:1}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:1}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:1}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:1}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:1}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},28).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:1}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},11).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:1}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},16).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:1}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:1}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:1}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:1}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:1}},{t:this.instance,p:{startPosition:0}}]},28).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:1}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:1}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:1}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:1}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},15).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:1}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:1}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:1}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:1}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:1}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},8).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:1}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:1}}]},40).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:1}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},12).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:1}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:1}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},45).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},68).to({state:[{t:this.instance_27,p:{startPosition:1}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},176).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:1}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},14).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:1}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:1}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:1}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:1}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:1}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},28).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:1}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},11).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:1}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},16).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:1}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:1}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:1}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:1}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:1}},{t:this.instance,p:{startPosition:0}}]},28).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:1}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:1}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:1}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:1}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},15).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:1}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:1}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:1}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:1}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},6).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:1}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},8).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:1}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:1}}]},40).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:1}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},12).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:1}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:1}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},13).to({state:[{t:this.instance_27,p:{startPosition:0}},{t:this.instance_26,p:{startPosition:0}},{t:this.instance_25,p:{startPosition:0}},{t:this.instance_24,p:{startPosition:0}},{t:this.instance_23,p:{startPosition:0}},{t:this.instance_22,p:{startPosition:0}},{t:this.instance_21,p:{startPosition:0}},{t:this.instance_20,p:{startPosition:0}},{t:this.instance_19,p:{startPosition:0}},{t:this.instance_18,p:{startPosition:0}},{t:this.instance_17,p:{startPosition:0}},{t:this.instance_16,p:{startPosition:0}},{t:this.instance_15,p:{startPosition:0}},{t:this.instance_14,p:{startPosition:0}},{t:this.instance_13,p:{startPosition:0}},{t:this.instance_12,p:{startPosition:0}},{t:this.instance_11,p:{startPosition:0}},{t:this.instance_10,p:{startPosition:0}},{t:this.instance_9,p:{startPosition:0}},{t:this.instance_8,p:{startPosition:0}},{t:this.instance_7,p:{startPosition:0}},{t:this.instance_6,p:{startPosition:0}},{t:this.instance_5,p:{startPosition:0}},{t:this.instance_4,p:{startPosition:0}},{t:this.instance_3,p:{startPosition:0}},{t:this.instance_2,p:{startPosition:0}},{t:this.instance_1,p:{startPosition:0}},{t:this.instance,p:{startPosition:0}}]},45).wait(59));
+	// title
+	this.instance_28 = new lib.CachedBmp_345();
+	this.instance_28.setTransform(518.95,185.55,0.5,0.5);
+	this.instance_29 = new lib.CachedBmp_344();
+	this.instance_29.setTransform(514.4,-110.1,0.5,0.5);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.instance_29},{t:this.instance_28}]}).wait(1803));
+	// sub_title
+	this.instance_30 = new lib.CachedBmp_346();
+	this.instance_30.setTransform(29.95,44.5,0.5,0.5);
+	this.timeline.addTween(cjs.Tween.get(this.instance_30).wait(1803));
+	// sub_title_explain
+	this.instance_31 = new lib.CachedBmp_347();
+	this.instance_31.setTransform(172.2,282.6,0.5,0.5);
+	this.timeline.addTween(cjs.Tween.get(this.instance_31).wait(1803));
+	// note_line
+	this.instance_32 = new lib.CachedBmp_348();
+	this.instance_32.setTransform(116.8,334.6,0.5,0.5);
+	this.timeline.addTween(cjs.Tween.get(this.instance_32).wait(1803));
+	// lyrics
+	this.instance_33 = new lib.가사_내친구이름은("single",0);
+	this.instance_33.setTransform(612.55,557.2);
+	this.timeline.addTween(cjs.Tween.get(this.instance_33).wait(176).to({startPosition:1},0).wait(14).to({startPosition:2},0).wait(6).to({startPosition:3},0).wait(6).to({startPosition:4},0).wait(6).to({startPosition:5},0).wait(6).to({startPosition:6},0).wait(28).to({startPosition:0},0).wait(11).to({startPosition:7},0).wait(16).to({startPosition:8},0).wait(6).to({startPosition:9},0).wait(6).to({startPosition:10},0).wait(6).to({startPosition:11},0).wait(6).to({startPosition:12},0).wait(28).to({startPosition:0},0).wait(13).to({startPosition:13},0).wait(6).to({startPosition:14},0).wait(6).to({startPosition:15},0).wait(15).to({startPosition:16},0).wait(13).to({startPosition:17},0).wait(6).to({startPosition:18},0).wait(6).to({startPosition:19},0).wait(6).to({startPosition:20},0).wait(8).to({startPosition:21},0).wait(13).to({startPosition:22},0).wait(40).to({startPosition:0},0).wait(12).to({startPosition:23},0).wait(13).to({startPosition:24},0).wait(13).to({startPosition:25},0).wait(45).to({startPosition:0},0).wait(244).to({startPosition:1},0).wait(14).to({startPosition:2},0).wait(6).to({startPosition:3},0).wait(6).to({startPosition:4},0).wait(6).to({startPosition:5},0).wait(6).to({startPosition:6},0).wait(28).to({startPosition:0},0).wait(11).to({startPosition:7},0).wait(16).to({startPosition:8},0).wait(6).to({startPosition:9},0).wait(6).to({startPosition:10},0).wait(6).to({startPosition:11},0).wait(6).to({startPosition:12},0).wait(28).to({startPosition:0},0).wait(13).to({startPosition:13},0).wait(6).to({startPosition:14},0).wait(6).to({startPosition:15},0).wait(15).to({startPosition:16},0).wait(13).to({startPosition:17},0).wait(6).to({startPosition:18},0).wait(6).to({startPosition:19},0).wait(6).to({startPosition:20},0).wait(8).to({startPosition:21},0).wait(13).to({startPosition:22},0).wait(40).to({startPosition:0},0).wait(12).to({startPosition:23},0).wait(13).to({startPosition:24},0).wait(13).to({startPosition:25},0).wait(45).to({startPosition:0},0).wait(244).to({startPosition:1},0).wait(14).to({startPosition:2},0).wait(6).to({startPosition:3},0).wait(6).to({startPosition:4},0).wait(6).to({startPosition:5},0).wait(6).to({startPosition:6},0).wait(28).to({startPosition:0},0).wait(11).to({startPosition:7},0).wait(16).to({startPosition:8},0).wait(6).to({startPosition:9},0).wait(6).to({startPosition:10},0).wait(6).to({startPosition:11},0).wait(6).to({startPosition:12},0).wait(28).to({startPosition:0},0).wait(13).to({startPosition:13},0).wait(6).to({startPosition:14},0).wait(6).to({startPosition:15},0).wait(15).to({startPosition:16},0).wait(13).to({startPosition:17},0).wait(6).to({startPosition:18},0).wait(6).to({startPosition:19},0).wait(6).to({startPosition:20},0).wait(8).to({startPosition:21},0).wait(13).to({startPosition:22},0).wait(40).to({startPosition:0},0).wait(12).to({startPosition:23},0).wait(13).to({startPosition:24},0).wait(13).to({startPosition:25},0).wait(45).to({startPosition:0},0).wait(59));
+	// sheet_music_bg
+	this.shape_4 = new cjs.Shape();
+	this.shape_4.graphics.f("#FFFFFF").s().p("EAbGAwvQh5AAhWhWQhWhWAAh6QAAh6hWhWQhWhVh6AAMgjnAAAQh6AAhWBVQhWBWAAB6QAAB6hWBWQhVBWh6AAMg7mAAAQjsAAioioQininAAjsMAAAhPnQAAjtCninQCoinDsAAMCs7AAAQDsAACoCnQCnCnAADtMAAABPnQAADsinCnQioCojsAAg");
+	this.shape_4.setTransform(638.825,457.45);
+	this.timeline.addTween(cjs.Tween.get(this.shape_4).wait(1803));
+	// menu_button
+	this.shape_5 = new cjs.Shape();
+	this.shape_5.graphics.f("#FFFFFF").s().p("ABIBjQgJAAgEgEQgEgFAAgKIAAghQAAgKAEgEIAAAAQAEgEAJAAIBkAAQAKgBAAANQAAAMgKAAIhWAAQgBAAAAAAQgBABAAAAQgBABAAAAQAAABAAABIAAANQAAAEADAAIBYAAQAKAAAAAMQAAANgKAAgAFRBKIAAifQgBgNAOAAQAPAAAAANIAACfQAAANgPAAQgOAAABgNgAg0BLIAAhUIgNAAIAABLQAAAMgOAAQgNAAAAgMIAAiWQAAgMANAAQAOAAAAAMIAAAxIANAAIAAgzQAAgMANAAQANAAAAAMIAAChQAAAMgNAAQgNAAAAgMgAliBGQgKAAAAgNQAAgNAKABIA+AAIAAglIghAAQgKAAgDgEQgFgEABgKIAAhBQAAgMAOAAQAOAAAAAMIAAA3QAAABAAABQAAAAABABQAAAAABABQABAAABAAIBZAAQAKgBAAANQAAAMgKAAIgrAAIAAAlIA9AAQALgBAAANQAAANgLAAgADkAuQgGgCgCgEIAAAAQgCgFAAgFQAAgFAEgDQAogZAKgLQAHgKABgTIAAgMQAAgBAAAAQAAgBgBAAQAAgBgBAAQgBAAgBAAIguAAQgLAAABgNQgBgNALABIA8AAQAJgBAEAEQAFAFAAAKIAAAXQAAAbgNAPQgMAQgtAdQgEACgDAAIgDgBgAizAmQgEgFAAgKIAAglQAAgLAEgEQAEgEAKAAIAbAAQAEAAgBgEIAAgSQAAgBAAAAQAAgBAAAAQgBgBAAAAQgBAAgBAAIgjAAQgKAAAAgNQAAgNAKABIAvAAQALgBAEAEIAAABQADAEAAAKIAAAmQAAAKgDAEQgEAEgLAAIgbAAQAAAAgBAAQgBABAAAAQgBABAAAAQAAABAAABIAAASQAAABAAABQAAAAABABQAAAAABABQABAAAAAAQAcgBAQgCQAFgBADADQACADABAGQADAMgKACQgSADgqAAQgKAAgEgEgAArAQQgKAAAAgNQAAgLAKAAICXAAQAKAAAAALQAAANgKAAgABJgUQgKAAgEgEQgEgFAAgKIAAgiQAAgKAEgFQAEgEAKABIBiAAQALgBAAANQAAAMgLAAIhVAAQAAAAgBAAQAAABgBAAQAAABAAAAQAAABAAABIAAAPQAAABAAAAQAAABAAAAQABABAAAAQABAAAAAAIBYAAQAKAAAAAMQAAANgKAAg");
+	this.shape_5.setTransform(857.15,75.725);
+	this.shape_6 = new cjs.Shape();
+	this.shape_6.graphics.f("#278345").s().p("AmwEMQhvAAhOhPQhPhPAAhuQAAhuBPhOQBOhPBvAAINhAAQBvAABOBPQBPBPAABtQAABuhPBPQhOBPhvAAg");
+	this.shape_6.setTransform(857.65,75.575);
+	this.singAlong_btn = new lib.singalongno();
+	this.singAlong_btn.name = "singAlong_btn";
+	this.singAlong_btn.setTransform(1149.55,75.55);
+	new cjs.ButtonHelper(this.singAlong_btn, 0, 1, 2, false, new lib.singalongno(), 3);
+	this.listen2_btn = new lib.Listening();
+	this.listen2_btn.name = "listen2_btn";
+	this.listen2_btn.setTransform(1003.4,75.55);
+	new cjs.ButtonHelper(this.listen2_btn, 0, 1, 2, false, new lib.Listening(), 3);
+	this.listen_btn = new lib.listentosongno();
+	this.listen_btn.name = "listen_btn";
+	this.listen_btn.setTransform(857.65,75.55);
+	new cjs.ButtonHelper(this.listen_btn, 0, 1, 2, false, new lib.listentosongno(), 3);
+	this.shape_7 = new cjs.Shape();
+	this.shape_7.graphics.f("#FFFFFF").s().p("AhpBkQgOAAAAgMIAAg2Ig9AAQgKAAAAgNQAAgMAKAAICXAAQAJAAABAMIAAABIAAABQgBAKgJABIg+AAIAAA2IAAABIAAABQgCAKgMAAgABBBhIgBAAQgGgBgDgDQgEgEABgLIAAggQgBgLAEgEQADgCAFgBIACAAIBogBQAKAAAAAMQAAANgKAAIhWAAQgBAAAAAAQgBAAAAABQgBAAAAABQAAAAAAABIAAAOQAAABAAAAQAAABABAAQAAABAAAAQABAAABABIBYAAQAKgBAAANQAAAMgKAAgAlDBfQgKAAgEgEIAAAAQgEgEAAgKIAAgnQAAgMAOAAQAOAAAAAMIAAAcQAAABAAABQAAAAABABQAAAAABABQAAAAABAAIBUAAQAKAAAAANQAAAMgKAAgAFbBWQgOgBABgMIAAigQgBgMAOAAIABAAQAPAAAAAMIAACgQAAANgPAAgADlAuIgFgCIAAABQgFgCgCgEIAAgBQgDgEAAgFQABgGAEgDQAogYAJgLQAIgKABgTIAAgMQgBgBAAgBQAAAAAAgBQgBAAAAAAQgBgBAAAAIgwAAQgKAAAAgMQAAgNAKAAIA/AAQAJAAADAEIAAAAQAEAEAAAKIAAAYQAAAbgMAQQgNAOgtAdIgGADgAj4AhIAAh4QgBgMAOAAQAPAAAAAMIAAAoIARAAQALAAAAANIAAABQgBAMgKAAIgRAAIAAA2QAAAMgPAAQgOAAABgMgAAmANQgGgCAAgJQAAgKAIAAICYAAQAIAAAAAKQAAAJgFACgAlXAMQgKAAgFgEQgEgEABgKIAAhHQgBgMAOAAQAOAAAAAMIAAAVIAkAAIAAgVQgBgMAOAAQAOAAAAAMIAABHQAAAKgEAEQgEAEgKAAgAlOgPQAAAEAEAAIAcAAQAEgBAAgDIAAgQIgkAAgAiugJQgCgEABgEIAAgCQABgGAEgCIAAAAIACAAIAXgLIABAAIABgBIAIgFQAJgEADgFQADgFABgHIgqAAQgJAAAAgNIAAAAIAAgBQAAgMAJABIBwAAQAKgBAAANQAAANgKAAIgpAAQAAAEABAEIAAABQACADAEAEIAAAAIAIAFIABAAIAJAFIAWALIACABIABAAQAFADABAEQABAEgCAGQgDAFgEACIgFACIgFgCIgjgRQgOgHgEgHQgEAHgOAHIgjASIgCABIgBAAIgCAAQgHAAgEgIgABBgWIgBAAQgGgBgCgDQgFgEABgLIAAghQgBgLAFgEQACgCAFgBIBqgBQAKAAAAAMQAAANgKAAIhVAAQgBAAgBAAQAAAAgBABQAAAAAAABQAAAAAAABIAAAPQAAABAAABQAAAAAAABQAAAAABAAQAAABABAAIBYAAQAKgBAAANQAAAMgKAAg");
+	this.shape_7.setTransform(1002.7472,75.725);
+	this.shape_8 = new cjs.Shape();
+	this.shape_8.graphics.f("#278345").s().p("AmxEMQhuAAhPhPQhOhPAAhuQAAhuBOhOQBPhPBuAAINjAAQBuAABPBPQBOBPAABtQAABuhOBPQhPBPhuAAg");
+	this.shape_8.setTransform(1003.4,75.575);
+	this.instance_34 = new lib.CachedBmp_349();
+	this.instance_34.setTransform(1079.05,48.8,0.5,0.5);
+	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.listen2_btn},{t:this.singAlong_btn},{t:this.shape_6},{t:this.shape_5}]}).to({state:[{t:this.shape_8},{t:this.shape_7},{t:this.singAlong_btn},{t:this.listen_btn}]},604).to({state:[{t:this.listen2_btn},{t:this.instance_34},{t:this.listen_btn}]},604).wait(595));
+	// yellow_bg
+	this.shape_9 = new cjs.Shape();
+	this.shape_9.graphics.f("#FCC012").s().p("Ehj/A+gMAAAh8/MDH/AAAMAAAB8/g");
+	this.shape_9.setTransform(640,400);
+	this.timeline.addTween(cjs.Tween.get(this.shape_9).wait(1803));
+	this._renderFirstFrame();
+}).prototype = p = new lib.AnMovieClip();
+p.nominalBounds = new cjs.Rectangle(640,289.9,640,510.1);
+// library properties:
+lib.properties = {
+	id: 'D9BA16A548848F44B4EF264F80D1018A',
+	width: 1280,
+	height: 800,
+	fps: 24,
+	color: "#FFFFFF",
+	opacity: 1.00,
+	manifest: [
+		{src:"images/CachedBmp_348.png?1705654520513", id:"CachedBmp_348"},
+		{src:"images/03_01_내친구이름_atlas_1.png?1705654520352", id:"03_01_내친구이름_atlas_1"},
+		{src:"images/03_01_내친구이름_atlas_2.png?1705654520352", id:"03_01_내친구이름_atlas_2"},
+		{src:"images/03_01_내친구이름_atlas_3.png?1705654520352", id:"03_01_내친구이름_atlas_3"},
+		{src:"images/03_01_내친구이름_atlas_4.png?1705654520352", id:"03_01_내친구이름_atlas_4"},
+		{src:"images/03_01_내친구이름_atlas_5.png?1705654520352", id:"03_01_내친구이름_atlas_5"},
+		{src:"images/03_01_내친구이름_atlas_6.png?1705654520352", id:"03_01_내친구이름_atlas_6"},
+		{src:"images/03_01_내친구이름_atlas_7.png?1705654520352", id:"03_01_내친구이름_atlas_7"},
+		{src:"sounds/_3102내친구이름학생가.mp3?1705654520513", id:"_3102내친구이름학생가"},
+		{src:"sounds/_3103내친구이름반주가.mp3?1705654520513", id:"_3103내친구이름반주가"}
+	],
+	preloads: []
+};
+// bootstrap callback support:
+(lib.Stage = function(canvas) {
+	createjs.Stage.call(this, canvas);
+}).prototype = p = new createjs.Stage();
+p.setAutoPlay = function(autoPlay) {
+	this.tickEnabled = autoPlay;
+}
+p.play = function() { this.tickEnabled = true; this.getChildAt(0).gotoAndPlay(this.getTimelinePosition()) }
+p.stop = function(ms) { if(ms) this.seek(ms); this.tickEnabled = false; }
+p.seek = function(ms) { this.tickEnabled = true; this.getChildAt(0).gotoAndStop(lib.properties.fps * ms / 1000); }
+p.getDuration = function() { return this.getChildAt(0).totalFrames / lib.properties.fps * 1000; }
+p.getTimelinePosition = function() { return this.getChildAt(0).currentFrame / lib.properties.fps * 1000; }
+an.bootcompsLoaded = an.bootcompsLoaded || [];
+if(!an.bootstrapListeners) {
+	an.bootstrapListeners=[];
+}
+an.bootstrapCallback=function(fnCallback) {
+	an.bootstrapListeners.push(fnCallback);
+	if(an.bootcompsLoaded.length > 0) {
+		for(var i=0; i<an.bootcompsLoaded.length; ++i) {
+			fnCallback(an.bootcompsLoaded[i]);
+		}
+	}
+};
+an.compositions = an.compositions || {};
+an.compositions['D9BA16A548848F44B4EF264F80D1018A'] = {
+	getStage: function() { return exportRoot.stage; },
+	getLibrary: function() { return lib; },
+	getSpriteSheet: function() { return ss; },
+	getImages: function() { return img; }
+};
+an.compositionLoaded = function(id) {
+	an.bootcompsLoaded.push(id);
+	for(var j=0; j<an.bootstrapListeners.length; j++) {
+		an.bootstrapListeners[j](id);
+	}
+}
+an.getComposition = function(id) {
+	return an.compositions[id];
+}
+an.makeResponsive = function(isResp, respDim, isScale, scaleType, domContainers) {		
+	var lastW, lastH, lastS=1;		
+	window.addEventListener('resize', resizeCanvas);		
+	resizeCanvas();		
+	function resizeCanvas() {			
+		var w = lib.properties.width, h = lib.properties.height;			
+		var iw = window.innerWidth, ih=window.innerHeight;			
+		var pRatio = window.devicePixelRatio || 1, xRatio=iw/w, yRatio=ih/h, sRatio=1;			
+		if(isResp) {                
+			if((respDim=='width'&&lastW==iw) || (respDim=='height'&&lastH==ih)) {                    
+				sRatio = lastS;                
+			}				
+			else if(!isScale) {					
+				if(iw<w || ih<h)						
+					sRatio = Math.min(xRatio, yRatio);				
+			}				
+			else if(scaleType==1) {					
+				sRatio = Math.min(xRatio, yRatio);				
+			}				
+			else if(scaleType==2) {					
+				sRatio = Math.max(xRatio, yRatio);				
+			}			
+		}
+		domContainers[0].width = w * pRatio * sRatio;			
+		domContainers[0].height = h * pRatio * sRatio;
+		domContainers.forEach(function(container) {				
+			container.style.width = w * sRatio + 'px';				
+			container.style.height = h * sRatio + 'px';			
+		});
+		stage.scaleX = pRatio*sRatio;			
+		stage.scaleY = pRatio*sRatio;
+		lastW = iw; lastH = ih; lastS = sRatio;            
+		stage.tickOnUpdate = false;            
+		stage.update();            
+		stage.tickOnUpdate = true;		
+	}
+}
+an.handleSoundStreamOnTick = function(event) {
+	if(!event.paused){
+		var stageChild = stage.getChildAt(0);
+		if(!stageChild.paused || stageChild.ignorePause){
+			stageChild.syncStreamSounds();
+		}
+	}
+}
+an.handleFilterCache = function(event) {
+	if(!event.paused){
+		var target = event.target;
+		if(target){
+			if(target.filterCacheList){
+				for(var index = 0; index < target.filterCacheList.length ; index++){
+					var cacheInst = target.filterCacheList[index];
+					if((cacheInst.startFrame <= target.currentFrame) && (target.currentFrame <= cacheInst.endFrame)){
+						cacheInst.instance.cache(cacheInst.x, cacheInst.y, cacheInst.w, cacheInst.h);
+					}
+				}
+			}
+		}
+	}
+}
+})(createjs = createjs||{}, AdobeAn = AdobeAn||{});
+var createjs, AdobeAn;
+</script>
+<script>
+var canvas, stage, exportRoot, anim_container, dom_overlay_container, fnStartAnimation;
+function init() {
+	canvas = document.getElementById("canvas");
+	anim_container = document.getElementById("animation_container");
+	dom_overlay_container = document.getElementById("dom_overlay_container");
+	var comp=AdobeAn.getComposition("D9BA16A548848F44B4EF264F80D1018A");
+	var lib=comp.getLibrary();
+	var loader = new createjs.LoadQueue(false);
+	loader.installPlugin(createjs.Sound);
+	loader.addEventListener("fileload", function(evt){handleFileLoad(evt,comp)});
+	loader.addEventListener("complete", function(evt){handleComplete(evt,comp)});
+	var lib=comp.getLibrary();
+	loader.loadManifest(lib.properties.manifest);
+}
+function handleFileLoad(evt, comp) {
+	var images=comp.getImages();	
+	if (evt && (evt.item.type == "image")) { images[evt.item.id] = evt.result; }	
+}
+function handleComplete(evt,comp) {
+	//This function is always called, irrespective of the content. You can use the variable "stage" after it is created in token create_stage.
+	var lib=comp.getLibrary();
+	var ss=comp.getSpriteSheet();
+	var queue = evt.target;
+	var ssMetadata = lib.ssMetadata;
+	for(i=0; i<ssMetadata.length; i++) {
+		ss[ssMetadata[i].name] = new createjs.SpriteSheet( {"images": [queue.getResult(ssMetadata[i].name)], "frames": ssMetadata[i].frames} )
+	}
+	exportRoot = new lib._03_01_내친구이름();
+	stage = new lib.Stage(canvas);
+	stage.enableMouseOver();	
+	//Registers the "tick" event listener.
+	fnStartAnimation = function() {
+		stage.addChild(exportRoot);
+		createjs.Ticker.framerate = lib.properties.fps;
+		createjs.Ticker.addEventListener("tick", stage);
+		createjs.Ticker.addEventListener("tick", AdobeAn.handleSoundStreamOnTick);
+	}	    
+	//Code to support hidpi screens and responsive scaling.
+	AdobeAn.makeResponsive(true,'both',true,1,[canvas,anim_container,dom_overlay_container]);	
+	AdobeAn.compositionLoaded(lib.properties.id);
+	fnStartAnimation();
+}
+function playSound(id, loop, offset) {
+	return createjs.Sound.play(id, {'interrupt':createjs.Sound.INTERRUPT_EARLY, 'loop': loop, 'offset': offset});}
+</script>
+<!-- write your code here -->
+</head>
+<body onload="init();" style="margin:0px;">
+	<div id="animation_container" style="background-color:rgba(255, 255, 255, 1.00); width:1280px; height:800px">
+		<canvas id="canvas" width="1280" height="800" style="position: absolute; display: block; background-color:rgba(255, 255, 255, 1.00);"></canvas>
+		<div id="dom_overlay_container" style="pointer-events:none; overflow:hidden; width:1280px; height:800px; position: absolute; left: 0px; top: 0px; display: block;">
+		</div>
+	</div>
+</body>
+</html>
